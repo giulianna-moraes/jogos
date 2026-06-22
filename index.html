@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Supply Chain Master Pro</title>
+<style>
+*{box-sizing:border-box;font-family:Segoe UI,sans-serif}body{margin:0;background:linear-gradient(135deg,#0f172a,#020617);color:#fff;padding:20px}
+.container{max-width:1200px;margin:auto}.card,.panel{background:rgba(255,255,255,.06);padding:20px;border-radius:16px;margin-bottom:20px}
+.dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.num{font-size:2rem;color:#38bdf8}
+button{background:#2563eb;color:#fff;border:none;padding:12px 18px;border-radius:10px;cursor:pointer;margin:5px}.options button{display:block;width:100%;margin:10px 0}
+.game{display:grid;grid-template-columns:2fr 1fr;gap:20px}.progress{height:20px;background:#1e293b;border-radius:20px;overflow:hidden}.bar{height:100%;background:#22c55e;width:0%}
+</style></head><body><div class='container'>
+<h1>🚚 Supply Chain Master Pro</h1>
+<div class='dashboard'>
+<div class='card'><div>⭐ Score</div><div id='score' class='num'>100</div></div>
+<div class='card'><div>💰 Capital</div><div id='capital' class='num'>1000000</div></div>
+<div class='card'><div>📦 Estoque</div><div id='estoque' class='num'>5000</div></div>
+<div class='card'><div>😊 Satisfação</div><div id='satisfacao' class='num'>80%</div></div>
+</div>
+<div class='card'>
+<button onclick='adicionarEquipe()'>➕ Adicionar Equipe</button>
+<button onclick='iniciar()'>▶ Iniciar</button>
+<button onclick='finalizar()'>🏁 Finalizar</button>
+<div id='lista'></div></div>
+<div class='game'>
+<div class='panel'><h2 id='titulo'>Cadastre equipes</h2><p id='descricao'></p><div class='options' id='opcoes'></div><div id='log'></div><div class='progress'><div class='bar' id='bar'></div></div></div>
+<div class='panel'><h3>Etapas</h3><p>⛏️ Fornecedores</p><p>🏭 Fabricação</p><p>🏢 Armazenagem</p><p>🚛 Transporte</p><p>📦 Distribuição</p><p>🛒 Cliente Final</p></div>
+</div></div>
+<script>
+let score=100,capital=1000000,estoque=5000,satisfacao=80,equipes=[],eq=0,fase=0;
+const base=[
+["Greve na Mineração","Uma greve interrompeu o fornecimento."],
+["Explosão na Demanda","Um influenciador viralizou o produto."],
+["Ataque Hacker","O ERP foi comprometido."],
+["Black Friday","As vendas triplicaram."],
+["Roubo de Carga","Uma carga foi roubada."],
+["Escassez de Chips","Faltam semicondutores."],
+["Porto Congestionado","Navios estão parados."],
+["Recall","Produtos apresentaram defeitos."],
+["Falta de Espaço","Estoque lotado."],
+["Combustível Caro","Diesel subiu 40%."],
+["Novo Concorrente","Nova empresa entrou no mercado."],
+["Greve Caminhoneiros","Transporte parado."]
+];
+const fases=[]; while(fases.length<24){let b=base[fases.length%base.length]; fases.push({titulo:b[0],descricao:b[1],opcoes:[["Investir em tecnologia",30,50000,10],["Manter operação",-10,0,-10],["Terceirizar",20,100000,5]]});}
+function adicionarEquipe(){let n=prompt("Nome da equipe"); if(!n)return; equipes.push({nome:n,pontos:0}); lista.innerHTML="<h3>Equipes</h3>"+equipes.map((e,i)=>`${i+1}. ${e.nome}`).join("<br>");}
+function iniciar(){if(equipes.length<2){alert("Cadastre 2 equipes");return;} carregar();}
+function carregar(){if(fase>=24){finalizar();return;} let f=fases[fase]; titulo.innerHTML=`${f.titulo}<br><small>Equipe: ${equipes[eq].nome}</small>`; descricao.textContent=f.descricao; opcoes.innerHTML=f.opcoes.map((o,i)=>`<button onclick='escolher(${i})'>${o[0]}</button>`).join("");}
+function escolher(i){let o=fases[fase].opcoes[i]; score+=o[1]; capital-=o[2]; satisfacao=Math.min(100,Math.max(0,satisfacao+o[3])); estoque+=Math.floor(Math.random()*500); equipes[eq].pontos+=score; log.innerHTML+=`<p>${equipes[eq].nome}: ${o[0]}</p>`; eq++; if(eq>=equipes.length){eq=0;fase++;} atualizar(); setTimeout(carregar,700);}
+function atualizar(){scoreEl=score; document.getElementById('score').innerText=score; document.getElementById('capital').innerText=capital.toLocaleString('pt-BR'); document.getElementById('estoque').innerText=estoque; document.getElementById('satisfacao').innerText=satisfacao+'%'; document.getElementById('bar').style.width=(fase/24*100)+'%';}
+function finalizar(){equipes.sort((a,b)=>b.pontos-a.pontos); document.querySelector('.panel').innerHTML='<h1>🏆 Ranking Final</h1>'+equipes.map((e,i)=>`<h3>${i+1}º ${e.nome}</h3><p>${e.pontos} pontos</p>`).join('')+'<button onclick="location.reload()">Novo Campeonato</button>';}
+atualizar();
+</script></body></html>
